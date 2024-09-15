@@ -21,25 +21,20 @@ savedataR <- function(data, csv_file, log_file) {
     stop("Input must be a data frame.")
   }
 
-  # Convert to data.table for faster operations
-  data <- as.data.table(data)
+  # Convert to data.table only if necessary
+  if (!is.data.table(data)) {
+    data <- as.data.table(data)
+  }
   
-  # Redirect output to log file
-  sink(log_file)
+  # Buffer log output to minimize file I/O
+  log_buffer <- c(
+    "Summary statistics for the dataset:\n",
+    capture.output(print(summary(data))),
+    capture.output(print(data[, lapply(.SD, mean, na.rm = TRUE)]))
+  )
 
-  # Print summary stats to log
-  cat("Summary statistics for the dataset:\n")
-  print(summary(data))
-  cat("\n")
-  
-  # Calculate means using data.table
-  means <- data[, lapply(.SD, mean, na.rm = TRUE)]
-  
-  # Print the calculated means
-  print(means)
-
-  # Stop redirecting output to log file
-  sink()
+  # Write the entire log buffer in one go
+  writeLines(log_buffer, log_file)
 
   # Save data as CSV using fwrite (more efficient than write.csv)
   fwrite(data, csv_file)
