@@ -1,3 +1,17 @@
+#' Save Data and Log Summary Statistics
+#'
+#' This function saves a data frame to a CSV file and logs summary statistics
+#' to a specified log file.
+#'
+#' @param data A data frame to be saved.
+#' @param csv_file Path to the output CSV file.
+#' @param log_file Path to the log file where summary statistics will be written.
+#'
+#' @return None.
+#' @examples
+#' savedataR(mtcars, "output.csv", "log.txt")
+#'
+#' @export
 savedataR <- function(data, csv_file, log_file) {
   # Check that input is a dataframe
   if (!is.data.frame(data)) {
